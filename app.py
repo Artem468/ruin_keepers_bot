@@ -30,7 +30,6 @@ async def main():
             user.user_main.router,
 
             admin.admin_main.router,
-            admin.mailing.router,
 
             core.core.router,
         )
