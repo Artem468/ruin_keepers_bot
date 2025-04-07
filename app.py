@@ -1,9 +1,7 @@
-import asyncio
 import datetime
 
 from aiogram import types
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
-from aiohttp import web
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from colorama import Fore, Style
 
