@@ -1,11 +1,13 @@
 import asyncio
 import datetime
 
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from colorama import Fore, Style
 
 from handlers import user, admin, core
 from loader import *
 from tables import init_models
+from utils.notify_tour import notify_tour
 
 
 async def on_startup():
@@ -16,6 +18,14 @@ async def on_startup():
         f"({datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')})",
         Style.RESET_ALL
     )
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(
+        func=notify_tour,
+        trigger="cron",
+        hour=16,
+        timezone=datetime.timezone.utc
+    )
+    scheduler.start()
 
 
 async def main():
