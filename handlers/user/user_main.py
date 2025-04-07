@@ -7,7 +7,7 @@ from aiogram.types import Message
 from sqlalchemy import select
 
 from loader import *
-from tables import ScheduledTours
+from tables import ScheduledTours, Tour
 from utils.user_input import Input
 
 router = Router()
@@ -25,15 +25,18 @@ async def start(message: Message):
 @router.message(F.text == UserButtons.create_entry.value)
 async def create_entry(message: Message, state: FSMContext):
     async with (async_session() as session):
-        scheduled_tours = (await session.execute(
-            select(ScheduledTours).where(ScheduledTours.start_at >= datetime.datetime.now())
+        scheduled_tours: list[Tour] = (await session.execute(
+            select(Tour)
+            .join(ScheduledTours, Tour.id == ScheduledTours.tour_id)
+            .where(ScheduledTours.start_at >= datetime.datetime.now())
+            .group_by(Tour.id)
         )).scalars().all()
         await bot.send_message(
             chat_id=message.chat.id,
             text="Выберите тур",
             reply_markup=InlineKeyboardMarkup(
                 inline_keyboard=[
-                    [InlineKeyboardButton(text="", callback_data="")] for item in scheduled_tours
+                    [InlineKeyboardButton(text=f"{item.name}", callback_data=f"tourName|{item.id}")] for item in scheduled_tours
                 ]
             )
         )

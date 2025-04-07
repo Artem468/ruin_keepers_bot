@@ -63,5 +63,6 @@ class UserButtons(enum.Enum):
 USER_KEYBOARD = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text=item.value)] for item in UserButtons
-    ]
+    ],
+    resize_keyboard=True
 )

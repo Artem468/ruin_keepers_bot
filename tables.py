@@ -11,9 +11,11 @@ class Tour(Base):
 
     id = Column("id", Integer, primary_key=True, autoincrement=True)
     name = Column("name", String)
+    description = Column("description", String)
     place = Column("place", String)
     price = Column("price", Float)
     max_members = Column("max_members", Integer)
+    image = Column("image", String)
 
 
 class ScheduledTours(Base):
