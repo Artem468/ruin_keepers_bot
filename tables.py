@@ -42,6 +42,7 @@ class Entries(Base):
     id = Column("id", Integer, primary_key=True, autoincrement=True)
     scheduled_tour_id = Column("scheduled_tour_id", ForeignKey("scheduled_tours.id", ondelete="CASCADE"))
     telegram_id = Column("telegram_id", BigInteger)
+    name = Column("name", String)
     email = Column("email", String)
     phone = Column("phone", String)
     is_need_lunch = Column("is_need_lunch", Boolean)
