@@ -7,7 +7,7 @@ from aiogram.types import Message, CallbackQuery
 from sqlalchemy import select
 
 from loader import *
-from tables import ScheduledTours, Tour, Entries
+from tables import ScheduledTours, Tour, Entries, Users
 from utils.user_input import Input, call_input, Output
 
 router = Router()
@@ -20,6 +20,12 @@ async def start(message: Message):
         text="<b>Бот запущен и готов помочь вам записаться на тур 🙃</b>",
         reply_markup=USER_KEYBOARD
     )
+    async with (async_session() as session):
+        user = Users(
+            id=message.chat.id,
+        )
+        session.add(user)
+        await session.commit()
 
 
 @router.message(F.text == UserButtons.create_entry.value)

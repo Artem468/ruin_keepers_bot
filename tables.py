@@ -5,6 +5,11 @@ from loader import engine
 
 Base = declarative_base()
 
+class Users(Base):
+    __tablename__ = "users"
+
+    id = Column(BigInteger, primary_key=True)
+
 
 class Tour(Base):
     __tablename__ = "tours"
