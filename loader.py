@@ -58,3 +58,14 @@ USER_KEYBOARD = ReplyKeyboardMarkup(
     ],
     resize_keyboard=True
 )
+
+
+class AdminButtons(enum.Enum):
+    mailing = "Рассылка"
+
+
+ADMIN_KEYBOARD = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text=item.value, callback_data=item.name)] for item in AdminButtons
+    ]
+)
