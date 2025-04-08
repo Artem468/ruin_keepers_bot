@@ -23,7 +23,7 @@ async def start(message: Message):
 
 
 @router.message(F.text == UserButtons.create_entry.value)
-async def create_entry(message: Message, state: FSMContext):
+async def create_entry(message: Message):
     async with (async_session() as session):
         scheduled_tours: list[tuple[Tour, ScheduledTours]] = (await session.execute(
             select(Tour, ScheduledTours)
@@ -252,8 +252,7 @@ async def finish_entry(call: CallbackQuery, state: FSMContext):
             phone=phone,
             is_need_lunch=is_need_lunch,
             is_need_notify=is_need_notify,
-            count_members=count_members + 1,
-            comment=None,
+            count_members=count_members + 1
         )
         session.add(entry)
         await session.commit()
@@ -263,3 +262,25 @@ async def finish_entry(call: CallbackQuery, state: FSMContext):
              f"{"<i>Мы напомним вам про тур ✨</i>\n" if is_need_notify else ""}"
              f"{"<i>Мы приготовим вам прекрасный обед 😋🍽️</i>" if is_need_lunch else ""}"
     )
+
+    async with(async_session() as session):
+        tour_entry = (
+            await session.execute(select(Entries, ScheduledTours, Tour)
+                                  .join(ScheduledTours, ScheduledTours.id == Entries.scheduled_tour_id)
+                                  .join(Tour, Tour.id == ScheduledTours.tour_id)
+                                  .where(Entries.id == tour_id)
+                                  )).one_or_none()
+
+        _entry, _scheduled_tour, _tour = tour_entry
+        await bot.send_message(
+            chat_id=MANAGER_CHAT,
+            text=f"<b>Новая запись</b>\n\n"
+                 f"<b>Тур:</b> {_tour.name}\n"
+                 f"<b>Начало - конец:</b> {_scheduled_tour.start_at.strftime("%d.%m %H:%M")} - {_scheduled_tour.end_at.strftime("%d.%m %H:%M")}\n\n"
+                 f"<b>Имя:</b> {_entry.name}\n"
+                 f"<b>Email:</b> {_entry.email if _entry.email is not None else "---"}\n"
+                 f"<b>Телефон:</b> {_entry.phone if _entry.phone is not None else "---"}\n"
+                 f"<b>Обед:</b> {"Нужен" if _entry.is_need_lunch else "Не требуется"}\n"
+                 f"<b>Количество человек:</b> {_entry.count_members}"
+        )
+

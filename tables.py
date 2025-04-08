@@ -50,7 +50,7 @@ class Entries(Base):
     is_need_lunch = Column("is_need_lunch", Boolean)
     is_need_notify = Column("is_need_notify", Boolean)
     count_members = Column("count_members", Integer)
-    comment = Column("comment", String)
+    comment = Column("comment", String, nullable=True, default=None)
 
 
 async def init_models() -> None:

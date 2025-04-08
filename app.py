@@ -10,6 +10,7 @@ from loader import *
 from tables import init_models
 from utils.notify_tour import notify_tour
 from utils.send_manager import send_manager
+from utils.vk_hooks import vk_hook
 
 
 async def on_startup():
@@ -67,7 +68,8 @@ if __name__ == '__main__':
     app.on_startup.append(main)
     app.on_shutdown.append(on_shutdown)
     app.add_routes([
-        web.post('/api/v1/sendManager', send_manager)
+        web.post('/api/v1/sendManager', send_manager),
+        web.post('/api/v1/vkHook', vk_hook)
     ])
 
     webhook_requests_handler = SimpleRequestHandler(

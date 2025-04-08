@@ -39,8 +39,8 @@ async def send_manager(request: web.Request):
                  f"<b>Тур:</b> {_tour.name}\n"
                  f"<b>Начало - конец:</b> {_scheduled_tour.start_at.strftime("%d.%m %H:%M")} - {_scheduled_tour.end_at.strftime("%d.%m %H:%M")}\n\n"
                  f"<b>Имя:</b> {_entry.name}\n"
-                 f"<b>Email:</b> {_entry.email}\n"
-                 f"<b>Телефон:</b> {_entry.phone}\n"
+                 f"<b>Email:</b> {_entry.email if _entry.email is not None else "---"}\n"
+                 f"<b>Телефон:</b> {_entry.phone if _entry.phone is not None else "---"}\n"
                  f"<b>Обед:</b> {"Нужен" if _entry.is_need_lunch else "Не требуется"}\n"
                  f"<b>Количество человек:</b> {_entry.count_members}"
         )
