@@ -5,7 +5,7 @@ from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_applicati
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from colorama import Fore, Style
 
-from handlers import user, admin, core
+from handlers import user, core
 from loader import *
 from tables import init_models
 from utils.notify_tour import notify_tour
@@ -54,9 +54,7 @@ async def main(*args, **kwargs):
 
         dp.include_routers(
             user.user_main.router,
-
-            admin.admin_main.router,
-
+            user.support.router,
             core.core.router,
         )
 

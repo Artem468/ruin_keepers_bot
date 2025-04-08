@@ -16,5 +16,5 @@ async def cancel_input(call: CallbackQuery, state: FSMContext):
     )
     await bot.send_message(
         chat_id=call.message.chat.id,
-        text="<b>Canceled</b>"
+        text="<b>Отменено</b>"
     )

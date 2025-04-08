@@ -45,19 +45,9 @@ async_session = sessionmaker(
 )
 
 
-class AdminButtons(enum.Enum):
-    mailing = "Рассылка"
-
-
-ADMIN_KEYBOARD = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text=item.value, callback_data=item.name)] for item in AdminButtons
-    ]
-)
-
-
 class UserButtons(enum.Enum):
     create_entry = "Записать на тур"
+    support = "Поддержка"
 
 
 USER_KEYBOARD = ReplyKeyboardMarkup(
