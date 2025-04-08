@@ -46,7 +46,7 @@ async_session = sessionmaker(
 
 
 class UserButtons(enum.Enum):
-    create_entry = "Записать на тур"
+    create_entry = "Записаться на тур"
     support = "Поддержка"
 
 

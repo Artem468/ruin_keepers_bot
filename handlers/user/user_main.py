@@ -78,7 +78,7 @@ async def select_tour(call: CallbackQuery, state: FSMContext):
 
     name_message = await Input(
         chat_id=call.message.chat.id,
-        text="<b>Напиши как мы можем к вам обращаться:</b>",
+        text="<b>Напишите как мы можем к вам обращаться:</b>",
         state=state
     ).reply_markup(_keyboard).hide_keyboard_after().edit(message_id=call.message.message_id)
 
