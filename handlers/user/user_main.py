@@ -1,4 +1,5 @@
 import datetime
+import re
 
 from aiogram import Router, F
 from aiogram.filters import Command
@@ -107,17 +108,28 @@ async def select_tour(call: CallbackQuery, state: FSMContext):
             .hide_keyboard_after()
             .send_message()
         )
-        if not _res.message.text.isdigit():
+        phone_regex = r"^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$"
+        if not re.match(phone_regex, _res.message.text):
             return await _get_phone()
         return _res
 
     phone_message = await _get_phone()
 
-    count_members_message = await Input(
-        chat_id=call.message.chat.id,
-        text="<b>Сколько человек поедут с вами?</b>",
-        state=state
-    ).reply_markup(_keyboard_count_members).hide_keyboard_after().send_message()
+    async def _get_count_members():
+        _res = await (
+            Input(
+                chat_id=call.message.chat.id,
+                text="<b>Сколько человек поедут с вами?</b>",
+                state=state)
+            .reply_markup(_keyboard_count_members)
+            .hide_keyboard_after()
+            .send_message()
+        )
+        if not _res.message.text.isdigit():
+            return await _get_count_members()
+        return _res
+
+    count_members_message = await _get_count_members()
 
     await state.update_data(
         tour_id=int(tour_id),
@@ -245,7 +257,7 @@ async def finish_entry(call: CallbackQuery, state: FSMContext):
     count_members = await state.get_value("count_members")
     is_need_notify = not not await state.get_value("is_need_notify")
     is_need_lunch = not not await state.get_value("is_need_lunch")
-
+    await state.clear()
     await bot.edit_message_reply_markup(
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
