@@ -4,7 +4,8 @@ from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
-from sqlalchemy import select
+
+from sqlalchemy import select, exc
 
 from loader import *
 from tables import ScheduledTours, Tour, Entries, Users
@@ -21,12 +22,14 @@ async def start(message: Message):
         reply_markup=USER_KEYBOARD
     )
     async with (async_session() as session):
-        user = Users(
-            id=message.chat.id,
-        )
-        session.add(user)
-        await session.commit()
-
+        try:
+            user = Users(
+                id=message.chat.id,
+           )
+            session.add(user)
+            await session.commit()
+        except exc.IntegrityError:
+            ...
 
 @router.message(F.text == UserButtons.create_entry.value)
 async def create_entry(message: Message):

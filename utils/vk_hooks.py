@@ -18,7 +18,6 @@ async def vk_hook(request: web.Request) -> web.Response:
 
         async with (async_session() as session):
             users = (await session.execute(select(Users.id))).scalars().all()
-            print(users)
             if _photos:
                 for user in users:
                     await bot.send_media_group(
