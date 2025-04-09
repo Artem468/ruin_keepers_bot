@@ -26,11 +26,12 @@ async def start(message: Message):
         try:
             user = Users(
                 id=message.chat.id,
-           )
+            )
             session.add(user)
             await session.commit()
         except exc.IntegrityError:
             ...
+
 
 @router.message(F.text == UserButtons.create_entry.value)
 async def create_entry(message: Message):
@@ -48,7 +49,7 @@ async def create_entry(message: Message):
                     [
                         InlineKeyboardButton(
                             text=f"{item[0].name} | {item[1].start_at.strftime("%d.%m %H:%M")} - {item[1].end_at.strftime("%d.%m %H:%M")}",
-                            callback_data=f"tourName|{item[0].id}"
+                            callback_data=f"tourName|{item[1].id}"
                         )
                     ] for item in scheduled_tours
                 ]
@@ -125,6 +126,8 @@ async def select_tour(call: CallbackQuery, state: FSMContext):
             .hide_keyboard_after()
             .send_message()
         )
+        if _res.to_return is None:
+            return _res
         if not _res.message.text.isdigit():
             return await _get_count_members()
         return _res
@@ -276,23 +279,23 @@ async def finish_entry(call: CallbackQuery, state: FSMContext):
             count_members=count_members + 1
         )
         session.add(entry)
-        await session.commit()
-    await bot.send_message(
-        chat_id=call.message.chat.id,
-        text=f"<b>Вы записаны на тур 🤗</b>\n\n"
-             f"{"<i>Мы напомним вам про тур ✨</i>\n" if is_need_notify else ""}"
-             f"{"<i>Мы приготовим вам прекрасный обед 😋🍽️</i>" if is_need_lunch else ""}"
-    )
+        await session.flush()
+        await bot.send_message(
+            chat_id=call.message.chat.id,
+            text=f"<b>Вы записаны на тур 🤗</b>\n\n"
+                 f"{"<i>Мы напомним вам про тур ✨</i>\n" if is_need_notify else ""}"
+                 f"{"<i>Мы приготовим вам прекрасный обед 😋🍽️</i>" if is_need_lunch else ""}"
+        )
 
-    async with(async_session() as session):
         tour_entry = (
             await session.execute(select(Entries, ScheduledTours, Tour)
                                   .join(ScheduledTours, ScheduledTours.id == Entries.scheduled_tour_id)
                                   .join(Tour, Tour.id == ScheduledTours.tour_id)
-                                  .where(Entries.id == tour_id)
+                                  .where(Entries.id == entry.id)
                                   )).one_or_none()
 
         _entry, _scheduled_tour, _tour = tour_entry
+        await session.commit()
         await bot.send_message(
             chat_id=MANAGER_CHAT,
             text=f"<b>Новая запись</b>\n\n"
@@ -304,4 +307,3 @@ async def finish_entry(call: CallbackQuery, state: FSMContext):
                  f"<b>Обед:</b> {"Нужен" if _entry.is_need_lunch else "Не требуется"}\n"
                  f"<b>Количество человек:</b> {_entry.count_members}"
         )
-
